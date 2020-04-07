@@ -5,7 +5,9 @@ import datetime
 import pandas as pd 
 from time import sleep
 import Spotify_Credentials
-
+import psycopg2
+import sql_credentials
+from sqlalchemy import create_engine
 
 client = MongoClient('localhost',27017)
 db = client['billboard_3']
@@ -60,8 +62,8 @@ class HotWeek:
             start = artist.find('secondary">')
             end = artist.find('</span')
             clean_artist = artist[start + len('secondary">'):end]
-            if '&amp' in clean_artist:
-                clean_artist = clean_artist[:clean_artist.find('&amp')-1]
+            if '&amp' in clean_artist.lower():
+                clean_artist = clean_artist[:clean_artist.lower().find('&amp')-1]
             if 'featuring' in clean_artist.lower():
                 clean_artist = clean_artist[:clean_artist.lower().find('featuring')-1]
             clean_artist_list.append(clean_artist)
@@ -79,7 +81,7 @@ class HotWeek:
                 if to_mongo:
                     db['songs'].insert_one(query['tracks']['items'][0])
             except:
-                spotify_ids.append('NA')
+                spotify_ids.append(('NA','NA'))
         return spotify_ids
     
     def _to_dict(self,n):
@@ -101,20 +103,27 @@ def to_dataframe(start_date,end_date,n):
     count = 0
         
     while start_date != end_date:
-        chart = HotWeek(str(start_date.date()),10,True)
+        chart = HotWeek(str(start_date.date()),10,False)
         new_row = pd.DataFrame.from_dict(chart.row)
         df = pd.concat([df,new_row])
         start_date = start_date + datetime.timedelta(days=7)
         sleep(1)
         print(count)
-        count = 1
+        count += 1
     return df
 if __name__ == '__main__':
     start_date = datetime.datetime.strptime('1958/08/23','%Y/%m/%d')
     end_date = datetime.datetime.strptime('2020/03/28','%Y/%m/%d')
+    #start_date = datetime.datetime.strptime('2013/02/02','%Y/%m/%d')
+    #end_date = datetime.datetime.strptime('2013/03/30','%Y/%m/%d')
+    
+
 
     data = to_dataframe(start_date,end_date,10)
-    data.to_csv('charts.csv')
+
+    engine = create_engine(sql_credentials.engine_path)
+    data.to_sql('hot_charts',engine)
+    #data.to_csv('charts.csv')
     
 
 
