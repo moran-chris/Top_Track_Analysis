@@ -2,6 +2,7 @@ import psycopg2
 import sql_credentials
 import pandas as pd
 import matplotlib.pyplot as plt 
+import numpy as np
 
 plt.style.use('ggplot')
 
@@ -11,8 +12,10 @@ def pull_data(query,conn):
 
 def genre__analysis(df):
     df['genre_list'] = df['genres'].apply(lambda x: x.split('|'))
-    df['year'] = df['date'].apply(lambda x: x[:4])
     df = df.explode('genre_list')
+    df['year'] = df['date'].apply(lambda x:int(x[:4]))
+    df = df.loc[df['year'] != 1958]
+    df= df.loc[df['year'] != 2020]
     return df 
 
 def plot_top_n_genres(df,n):
@@ -34,7 +37,8 @@ def plot_top_n_genres_over_time(df,columns,ax,color = [None]):
 
     for index, genre in enumerate(columns):
         ax.plot(df['year'],df[genre],color = color[index],label = genre.replace('genre_list_',''))
-    ax.set_xticklabels(labels = df['year'],rotation = 45)
+    #ax.set_xticklabels(labels = df['year'].apply(lambda x: int(x)),rotation = 45)
+    #ax.set_xticklabels(list(np.arange(min(1958), max(2020)+1, 1.0)))
     ax.legend()
 
 if __name__ == '__main__':
@@ -59,12 +63,16 @@ if __name__ == '__main__':
                 'genre_list_dance pop','genre_list_pop']
     fig,ax = plt.subplots(1,figsize= (20,8))
     plot_top_n_genres_over_time(genre_df_dummies,genre_list,ax)
+    fig.autofmt_xdate()
     plt.show()
     
     fig,ax = plt.subplots(1,figsize= (20,8))
+    
     plot_top_n_genres_over_time(genre_df_dummies,genre_list,ax,color = ['#0000CD','#00008B','#0000FF','#FF0000','#8B0000','#FA8072'])
+    fig.autofmt_xdate()
+
     plt.show()
 
-    fig,ax = plt.subplots(2,figsize=(20,10))
-    plot_top_n_genres_over_time(genre_df_dummies.loc[genre_df_dummies['year'].apply(lambda x: int(x)) <= 1985],genre_list,ax[0])
-    plot_top_n_genres_over_time(genre_df_dummies.loc[genre_df_dummies['year'].apply(lambda x: int(x)) >= 1985],genre_list,ax[1])
+    #fig,ax = plt.subplots(2,figsize=(20,10))
+    #plot_top_n_genres_over_time(genre_df_dummies.loc[genre_df_dummies['year'].apply(lambda x: int(x)) <= 1985],genre_list,ax[0])
+    #plot_top_n_genres_over_time(genre_df_dummies.loc[genre_df_dummies['year'].apply(lambda x: int(x)) >= 1985],genre_list,ax[1])
