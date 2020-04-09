@@ -5,7 +5,6 @@ import datetime
 import pandas as pd 
 from time import sleep
 import Spotify_Credentials
-import psycopg2
 import sql_credentials
 from sqlalchemy import create_engine
 
@@ -15,36 +14,33 @@ table = db['hot_100']
 
 client_credentials_manager = SpotifyClientCredentials(Spotify_Credentials.Client_ID,Spotify_Credentials.Secret_ID)
 sp = spotipy.Spotify(client_credentials_manager=client_credentials_manager)
+engine = create_engine(sql_credentials.engine_path)
 
 
 
-
-artist = 'Post Malone'
-song = 'Circles'
-query_1 = f'artist:{artist}  track:{song}'
-
-#query = sp.search(q = 'artist:Pink Floyd track:Money',type = 'track',limit = 1)
-
-#query = sp.search(q = f'artist:{artist} track:{song}', type = 'track', limit =1)
-
-
-#x = table.find({'date':'2019-12-07'})[0]
+# '''Grabs and cleans data from Mongo and collects song and artist attributes via 
+#   Spotify's API
+    
+#    Date = week of hot 100 chart 
+#    N = number of top songs to grab from hot 100 chart '''
 
 class HotWeek:
 
 
-    def __init__(self,date,n,to_mongo = False):
+    def __init__(self,date,n):
         self.date = date
         self.n = n
-        self.to_mongo = to_mongo
         self.data = self._get_data()
         self.songs = self._get_songs(self.n)
         self.artists = self._get_artist(self.n)
-        self.spotify_ids = self._get_spotify_id(self.n,self.to_mongo)
+        self.spotify_ids = self._get_spotify_id(self.n)
         self.row = self._to_dict(self.n)
+
+    # Grabs a specific Hot 100 chart based on date 
     def _get_data(self):
         return table.find({'date':self.date}).limit(1)[0]
 
+    # Cleans the song data from self. data and outputs a list of songs names included in that weeks chart 
     def _get_songs(self,n):
         raw_song_list = self.data['songs']
         clean_song_list = []
@@ -54,7 +50,7 @@ class HotWeek:
             clean_song = song[start + len('primary">'):end]
             clean_song_list.append(clean_song)
         return clean_song_list
-
+    #Cleans artist data from self.data and outputs list of artist names in that weeks chart
     def _get_artist(self,n):
         raw_artist_list = self.data['artist']
         clean_artist_list = []
@@ -68,7 +64,11 @@ class HotWeek:
                 clean_artist = clean_artist[:clean_artist.lower().find('featuring')-1]
             clean_artist_list.append(clean_artist)
         return clean_artist_list
-    def _get_spotify_id(self,n,to_mongo):
+    
+    # '''Queries Spotify's API and returns Spotify's unique identifier, urn, 
+    #   for the passed combination of song and artist 
+    #   '''
+    def _get_spotify_id(self,n):
         spotify_ids = []
         for item in range(n):
             try:
@@ -78,8 +78,6 @@ class HotWeek:
                 song_uri = query['tracks']['items'][0]['uri']
                 artist_uri = query['tracks']['items'][0]['artists'][0]['uri']
                 spotify_ids.append((song_uri,artist_uri))
-                if to_mongo:
-                    db['songs'].insert_one(query['tracks']['items'][0])
             except:
                 spotify_ids.append(('NA','NA'))
         return spotify_ids
@@ -92,6 +90,9 @@ class HotWeek:
             row['song_id'+str(index+1)] = [self.spotify_ids[index][0]]
             row['artist_id'+str(index+1)] = [self.spotify_ids[index][1]]
         return row
+
+# ''' Creates a data frame with each row being a date and columns of 
+#       song_1, song_id1, artist_1, artist_id1 ....artist_idn '''
 def to_dataframe(start_date,end_date,n):
     cols = ['date']
     for index in range(n):
@@ -103,27 +104,24 @@ def to_dataframe(start_date,end_date,n):
     count = 0
         
     while start_date != end_date:
-        chart = HotWeek(str(start_date.date()),10,False)
+        chart = HotWeek(str(start_date.date()),10)
         new_row = pd.DataFrame.from_dict(chart.row)
         df = pd.concat([df,new_row])
         start_date = start_date + datetime.timedelta(days=7)
         sleep(1)
-        print(count)
-        count += 1
     return df
+
+
 if __name__ == '__main__':
+
     start_date = datetime.datetime.strptime('1958/08/23','%Y/%m/%d')
     end_date = datetime.datetime.strptime('2020/03/28','%Y/%m/%d')
-    #start_date = datetime.datetime.strptime('2013/02/02','%Y/%m/%d')
-    #end_date = datetime.datetime.strptime('2013/03/30','%Y/%m/%d')
-    
-
 
     data = to_dataframe(start_date,end_date,10)
 
-    engine = create_engine(sql_credentials.engine_path)
+    # Uploads dataframe to SQL
     data.to_sql('hot_charts',engine)
-    #data.to_csv('charts.csv')
+
     
 
 

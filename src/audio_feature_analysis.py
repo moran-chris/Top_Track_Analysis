@@ -6,7 +6,9 @@ import numpy as np
 
 plt.style.use('ggplot')
 
-
+# '''Creates object of class AudioFeatures with a SQL query and connection passed
+#   each object has a data attribute wich is a df of the data from the SQL query
+#   the grouped data attribute is the queried data grouped by year '''
 class AudioFeatures():
     
     def __init__(self,query,conn):
@@ -48,7 +50,7 @@ if __name__ == '__main__':
                     'acousticness','instrumentalness','liveness','valence','tempo',
                     'time_signature']
 
-
+    #Plots each feature in feature list over time as its own plot 
     fig,ax = plt.subplots(4,3,figsize = (40,40))
     ax_list = ax.flatten()
     for index,feature in enumerate(feature_list):
@@ -66,7 +68,7 @@ if __name__ == '__main__':
 
     plt.show()
 
-
+    #Plots valence & speechiness over time with key songs/dates as points 
     fig,ax = plt.subplots(2,1,figsize = (8,8))
     ax_list = ax.flatten()
     valence_query = ''' 
@@ -86,7 +88,6 @@ if __name__ == '__main__':
     ax[0].set_title('Valence')
 
 
-    
     speechiness_query = ''' 
             SELECT s.unique_id,s.date,s.song_id,af.speechiness
             FROM songs s
@@ -110,8 +111,6 @@ if __name__ == '__main__':
 
     fig,ax = plt.subplots(1,figsize = (8,8))
     
-    # fig.autofmt_xdate()
-    # plt.show()
 
 
     duration_query = ''' 
