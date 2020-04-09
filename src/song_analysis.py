@@ -68,23 +68,23 @@ if __name__ == '__main__':
     genre_df = genre__analysis(source_df)
     genre_df_dummies = get_genre_dummies(genre_df)
 
-    #Histogram 
-    plot_top_n_genres(genre_df,10)
+    # #Histogram 
+    # plot_top_n_genres(genre_df,10)
     
-    #Line plot over time 
-    matplotlib.rc('xtick', labelsize = 20)
-    matplotlib.rc('ytick', labelsize = 20)
+    # #Line plot over time 
+    # matplotlib.rc('xtick', labelsize = 20)
+    # matplotlib.rc('ytick', labelsize = 20)
     
-    genre_list = ['genre_list_folk rock','genre_list_adult standards',
-                'genre_list_mellow gold','genre_list_pop rap',
-                'genre_list_dance pop','genre_list_pop']
+    # genre_list = ['genre_list_folk rock','genre_list_adult standards',
+    #             'genre_list_mellow gold','genre_list_pop rap',
+    #             'genre_list_dance pop','genre_list_pop']
     
-    fig,ax = plt.subplots(1,figsize= (20,12))
+    # fig,ax = plt.subplots(1,figsize= (20,12))
     
-    plot_genres_over_time(genre_df_dummies,genre_list,ax,color = ['teal','deepskyblue','mediumblue','#FF0000','#8B0000','#FA8072'])
-    fig.autofmt_xdate()
-    plt.savefig('images/top_genres_over_time_2.png')
-    plt.show()
+    # plot_genres_over_time(genre_df_dummies,genre_list,ax,color = ['teal','deepskyblue','mediumblue','#FF0000','#8B0000','#FA8072'])
+    # fig.autofmt_xdate()
+    # plt.savefig('images/top_genres_over_time_2.png')
+    # plt.show()
 
     #Danceability and dance pop ploted on different y axis
     dance_query = ''' 
@@ -99,9 +99,9 @@ if __name__ == '__main__':
     dance_analysis.add_year_column()
     dance_analysis.group()
     ax.plot(dance_analysis.grouped_data['year'],dance_analysis.grouped_data['danceability'],label = 'danceability',color = 'red')
-    ax.legend()
-
+    ax.legend(loc = 1)
     ax2 = ax.twinx()
-    ax2.plot(genre_df_dummies['year'],genre_df_dummies['genre_list_dance pop'],color = 'blue',label = 'dance pop')
-
+    ax2.plot(genre_df_dummies['year'],genre_df_dummies['genre_list_dance pop'],color = '#8B0000',label = 'dance pop')
+    ax2.legend(loc = 2)
+    fig.savefig('../images/dancepop_v_dance.png')
     plt.show()
