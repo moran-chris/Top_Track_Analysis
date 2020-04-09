@@ -19,8 +19,12 @@ The first feature I decided to look at was genre and how it changed throught the
 
 ![](/images/genre_histogram.png)
 
-I decided to focus my analysis on the most popular genres. To understand how the popularity of genres changed I plotted the number of songs each genre had in the top 10 for each year. The plot clearly shows that the popularity of the genres has changed since the inception of the Hot 100. 
+I decided to focus my analysis on the most popular genres. To understand how the popularity of genres changed I plotted the number of songs each genre had in the top 10 for each year. The plot clearly shows that the popularity of genres has changed since the inception of the Hot 100. Specifically, the genres indicated by shades of blue have declined in popularity while the genres indicated by shades of red have increased in popularity. 
 
 ![](/images/top_genres_over_time.png)
-
+An interesting aspect of this change is the timeframe the switch occurs. There appears to be a drastic shift in genre taste during the period of 1983 - 1994 (shaded region below). Throughout this period genres associated with bands and multiple instruments decline while genres associated with studio produced sounds skyrocket in popularity.  
 ![](/images/top_genres_over_time_2.png)
+
+# Audio Feature Analysis 
+
+![](/images/valance_speechiness.png)
