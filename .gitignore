@@ -5,4 +5,5 @@ sql_credentials.py
 __pycache__
 .ipynb_checkpoints/
 .~lock.charts.csv#
+sql_upload.py
 sql_engine_test.py
