@@ -94,7 +94,7 @@ if __name__ == '__main__':
              ON s.song_id = af.uri
              '''
 
-    fig,ax = plt.subplots(1,figsize = (8,8))
+    fig,ax = plt.subplots(1,figsize = (6,6))
     dance_analysis = AudioFeatures(dance_query,conn)
     dance_analysis.add_year_column()
     dance_analysis.group()
