@@ -94,12 +94,12 @@ if __name__ == '__main__':
              ON s.song_id = af.uri
              '''
 
-    fig,ax = plt.subplots(1,figsize = (6,6))
+    fig,ax = plt.subplots(1,figsize = (8,4))
     dance_analysis = AudioFeatures(dance_query,conn)
     dance_analysis.add_year_column()
     dance_analysis.group()
     ax.plot(dance_analysis.grouped_data['year'],dance_analysis.grouped_data['danceability'],label = 'danceability',color = 'red')
-    ax.legend(loc = 1)
+    ax.legend(loc = 'upper left', bbox_to_anchor = (0,.9))
     ax2 = ax.twinx()
     ax2.plot(genre_df_dummies['year'],genre_df_dummies['genre_list_dance pop'],color = '#8B0000',label = 'dance pop')
     ax2.legend(loc = 2)
