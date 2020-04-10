@@ -103,5 +103,6 @@ if __name__ == '__main__':
     ax2 = ax.twinx()
     ax2.plot(genre_df_dummies['year'],genre_df_dummies['genre_list_dance pop'],color = '#8B0000',label = 'dance pop')
     ax2.legend(loc = 2)
+    ax2.set_title('Danceability vs Dance Pop')
     fig.savefig('../images/dancepop_v_dance.png')
     plt.show()
