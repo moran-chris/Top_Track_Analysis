@@ -36,7 +36,7 @@ The below chart shows the feature danceability plotted with the genre dance pop.
 
 ## Valence & Speechiness
 Audio features also give us insight into the popularity of sub-genres and the characteristics that define genres. For example, the audio feature "valence" rates how happy and positive a song is, versus how sad or negative it is. There is a steep drop in average valence during the 90's, right when grunge music was becoming more mainstreem. 
-The feature "speechiness" detects the presence of spoken words in songs. A dramatic increase in speechiness occurs in the early 2000s when Eminem, Nelly and other rap artist frequently appeared on the Hot 100. 
+The feature "speechiness" detects the presence of spoken words in songs. A dramatic increase in speechiness occurs in the early 2000s when Eminem, Nelly and other rap artist frequently appeared on the Hot 100.  
 
 ![](/images/valance_speechiness.png)
 
